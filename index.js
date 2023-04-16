@@ -112,25 +112,36 @@
      `);
    });
 
-   app.post('/download', async (req, res) => {
-     try {
-       let url = req.body.url;
-       let type = req.body.type;
-       let quality = req.body.quality;
-       let bitrate = req.body.bitrate;
-       let server = req.body.server;
+   async function downloadVideo(url, type, quality, bitrate, server) {
+  // ... existing code ...
+  
+  if (!list[quality]) {
+    throw `Could not find download link for ${quality} ${type} ${bitrate}kbps`;
+  }
+  
+  return list[quality];
+}
 
-       let downloadLink = await downloadVideo(url, type, quality, bitrate, server);
+app.post('/download', async (req, res) => {
+  try {
+    let url = req.body.url;
+    let type = req.body.type;
+    let quality = req.body.quality;
+    let bitrate = req.body.bitrate;
+    let server = req.body.server;
 
-       res.send(`
-         <a href="${downloadLink}" download>Download Link</a>
-       `);
-     } catch (err) {
-       res.send(`
-         <p>${err}</p>
-       `);
-     }
-   });
+    let downloadLink = await downloadVideo(url, type, quality, bitrate, server);
+
+    res.send(`
+      <a href="${downloadLink}" download>Download Link</a>
+    `);
+  } catch (err) {
+    res.send(`
+      <p>${err}</p>
+    `);
+  }
+});
+
 
    app.listen(3000, () => {
      console.log('Server started on port 3000');
